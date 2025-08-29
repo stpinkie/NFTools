@@ -18,7 +18,7 @@ interface IERC1155 {
     ) external view returns (uint256);
 }
 
-contract ProxyNFTDetector {
+contract NFTools {
     function detectProxy721(
         address holder,
         address proxy721
