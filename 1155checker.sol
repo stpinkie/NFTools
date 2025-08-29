@@ -3,6 +3,8 @@ pragma solidity ^0.8.24;
 
 import "@openzeppelin/contracts/token/ERC1155/ERC1155.sol";
 
+// This contract's functionality has been integrated into NFTools.sol
+
 /// @title 1155 NFT Checker
 /// @author Daniel "St. Pinkie" Anthony
 /// @notice This contract checks whether an address is holding an ERC1155 NFT with any tokenID from a particular contract.
