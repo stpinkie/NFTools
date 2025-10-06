@@ -19,27 +19,27 @@ interface IERC1155 {
 }
 
 contract NFTools {
-    function detectProxy721(
+    function detect721(
         address holder,
         address proxy721
-    ) external view returns (uint256) {
+    ) public view returns (uint256) {
         return IERC721(proxy721).balanceOf(holder);
     }
 
-    function detectProxy1155ByTokenId(
+    function detect1155ByTokenId(
         address holder,
         address proxy1155,
         uint256 tokenId
-    ) external view returns (uint256) {
+    ) public view returns (uint256) {
         return IERC1155(proxy1155).balanceOf(holder, tokenId);
     }
 
-    function detectProxy1155InWallet(
+    function detect1155InWallet(
         address holder,
         address proxy1155,
         uint256 firstTokenId,
         uint256 lastTokenId
-    ) external view returns (bool) {
+    ) public view returns (bool) {
         bool hasNFT = false;
         for (uint256 i = firstTokenId; i < lastTokenId; ++i) {
             if (IERC1155(proxy1155).balanceOf(holder, i) > 0) {
@@ -49,4 +49,36 @@ contract NFTools {
         }
         return hasNFT;
     }
+
+    function countUnique1155InWallet(
+        address holder,
+        address proxy1155,
+        uint256 firstTokenId,
+        uint256 lastTokenId
+    ) public view returns (uint256) {
+        uint256 uniqueCount = 0;
+        for (uint256 i = firstTokenId; i < lastTokenId; ++i) {
+            if (IERC1155(proxy1155).balanceOf(holder, i) > 0) {
+                ++uniqueCount;
+            }
+        }
+        return uniqueCount;
+    }
+
+    function counttotal1155InWallet(
+        address holder,
+        address proxy1155,
+        uint256 firstTokenId,
+        uint256 lastTokenId
+    ) public view returns (uint256) {
+        uint256 totalCount = 0;
+        for (uint256 i = firstTokenId; i < lastTokenId; ++i) {
+            if (IERC1155(proxy1155).balanceOf(holder, i) > 0) {
+                totalCount = totalCount + IERC1155(proxy1155).balanceOf(holder, i);
+            }
+        }
+        return totalCount;
+    }
+
+    
 }
