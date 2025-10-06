@@ -65,7 +65,7 @@ contract NFTools {
         return uniqueCount;
     }
 
-    function counttotal1155InWallet(
+    function countTotal1155InWallet(
         address holder,
         address proxy1155,
         uint256 firstTokenId,
