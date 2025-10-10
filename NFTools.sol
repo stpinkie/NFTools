@@ -41,7 +41,7 @@ contract NFTools {
         uint256 lastTokenId
     ) public view returns (bool) {
         bool hasNFT = false;
-        for (uint256 i = firstTokenId; i < lastTokenId; ++i) {
+        for (uint256 i = firstTokenId; i <= lastTokenId; ++i) {
             if (IERC1155(proxy1155).balanceOf(holder, i) > 0) {
                 hasNFT = true;
                 break;
@@ -57,7 +57,7 @@ contract NFTools {
         uint256 lastTokenId
     ) public view returns (uint256) {
         uint256 uniqueCount = 0;
-        for (uint256 i = firstTokenId; i < lastTokenId; ++i) {
+        for (uint256 i = firstTokenId; i <= lastTokenId; ++i) {
             if (IERC1155(proxy1155).balanceOf(holder, i) > 0) {
                 ++uniqueCount;
             }
@@ -72,7 +72,7 @@ contract NFTools {
         uint256 lastTokenId
     ) public view returns (uint256) {
         uint256 totalCount = 0;
-        for (uint256 i = firstTokenId; i < lastTokenId; ++i) {
+        for (uint256 i = firstTokenId; i <= lastTokenId; ++i) {
             if (IERC1155(proxy1155).balanceOf(holder, i) > 0) {
                 totalCount = totalCount + IERC1155(proxy1155).balanceOf(holder, i);
             }
