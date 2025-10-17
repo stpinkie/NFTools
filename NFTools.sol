@@ -65,7 +65,24 @@ contract NFTools {
         return uniqueCount;
     }
 
-    /// @dev This experimental function aims to detect how many sets of NFTs someone has on an ERC1155 contact, if a user is required to have one of each tokenId, for instance.
+    /// @dev These experimental functions aim to detect how many sets of NFTs someone has on an ERC1155 contact, if a user is required to have one of each tokenId.
+
+    function count1155SetsInWallet(
+        address holder,
+        address contract1155,
+        uint256[] calldata setTokens
+    ) public view returns (uint256) {
+        uint256 minBalance = type(uint256).max;
+        for (uint256 i = 0; i < setTokens.length; i++) {
+            uint256 balance = IERC1155(contract1155).balanceOf(holder, setTokens[i]);
+            if (balance < minBalance) minBalance = balance;
+        }
+        if (minBalance == type(uint256).max) {
+            return 0;
+        } else {
+            return minBalance;
+        }
+    }
 
     function count1155SeriesInWallet(
         address holder,
@@ -73,26 +90,16 @@ contract NFTools {
         uint256 firstTokenId,
         uint256 lastTokenId
     ) public view returns (uint256) {
-        uint256 setCount;
-        uint256 countUnique;
-            for (uint256 s = 1; countUnique == 12; ++s) {
-                countSymbols = 0;
-                for (uint256 i = 1; i <= 12; ++i) {
-                    if (IERC1155(contract1155).balanceOf(holder, i) > s) {
-                        ++countUnique;
-                    }
-                }
-                setCount = s;
-            return setCount;
+        uint256 minBalance = type(uint256).max;
+        for (uint256 i = firstTokenId; i <= lastTokenId; ++i) {
+            uint256 balance = IERC1155(contract1155).balanceOf(holder, i);
+            if (balance < minBalance) minBalance = balance;
         }
-    }
-
-    function count1155SetsInWallet(
-        address holder,
-        address contract1155,
-        uint256[] setTokens
-    ) {
-        
+        if (minBalance == type(uint256).max) {
+            return 0;
+        } else {
+            return minBalance;
+        }
     }
 
     function countTotal1155InWallet(
