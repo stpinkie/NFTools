@@ -19,11 +19,19 @@ interface IERC1155 {
 }
 
 contract NFTools {
+
     function detect721(
         address holder,
         address contract721
     ) public view returns (uint256) {
         return IERC721(contract721).balanceOf(holder);
+    }
+
+    struct Contract1155 {
+        address holder;
+        address contract1155;
+        uint256 firstTokenId;
+        uint256 lastTokenId;
     }
 
     function detect1155ByTokenId(
@@ -34,15 +42,10 @@ contract NFTools {
         return IERC1155(contract1155).balanceOf(holder, tokenId);
     }
 
-    function detect1155InWallet(
-        address holder,
-        address contract1155,
-        uint256 firstTokenId,
-        uint256 lastTokenId
-    ) public view returns (bool) {
+    function detect1155InWallet(Contract1155 memory userContract) public view returns (bool) {
         bool hasNFT = false;
-        for (uint256 i = firstTokenId; i <= lastTokenId; ++i) {
-            if (IERC1155(contract1155).balanceOf(holder, i) > 0) {
+        for (uint256 i = userContract.firstTokenId; i <= userContract.lastTokenId; ++i) {
+            if (IERC1155(userContract.contract1155).balanceOf(userContract.holder, i) > 0) {
                 hasNFT = true;
                 break;
             }
@@ -50,15 +53,10 @@ contract NFTools {
         return hasNFT;
     }
 
-    function countUnique1155InWallet(
-        address holder,
-        address contract1155,
-        uint256 firstTokenId,
-        uint256 lastTokenId
-    ) public view returns (uint256) {
+    function countUnique1155InWallet(Contract1155 memory userContract) public view returns (uint256) {
         uint256 uniqueCount = 0;
-        for (uint256 i = firstTokenId; i <= lastTokenId; ++i) {
-            if (IERC1155(contract1155).balanceOf(holder, i) > 0) {
+        for (uint256 i = userContract.firstTokenId; i <= userContract.lastTokenId; ++i) {
+            if (IERC1155(userContract.contract1155).balanceOf(userContract.holder, i) > 0) {
                 ++uniqueCount;
             }
         }
@@ -84,15 +82,10 @@ contract NFTools {
         }
     }
 
-    function count1155SeriesInWallet(
-        address holder,
-        address contract1155,
-        uint256 firstTokenId,
-        uint256 lastTokenId
-    ) public view returns (uint256) {
+    function count1155SeriesInWallet(Contract1155 memory userContract) public view returns (uint256) {
         uint256 minBalance = type(uint256).max;
-        for (uint256 i = firstTokenId; i <= lastTokenId; ++i) {
-            uint256 balance = IERC1155(contract1155).balanceOf(holder, i);
+        for (uint256 i = userContract.firstTokenId; i <= userContract.lastTokenId; ++i) {
+            uint256 balance = IERC1155(userContract.contract1155).balanceOf(userContract.holder, i);
             if (balance < minBalance) minBalance = balance;
         }
         if (minBalance == type(uint256).max) {
@@ -102,20 +95,41 @@ contract NFTools {
         }
     }
 
-    function countTotal1155InWallet(
-        address holder,
-        address contract1155,
-        uint256 firstTokenId,
-        uint256 lastTokenId
-    ) public view returns (uint256) {
+    function countTotal1155InWallet(Contract1155 memory userContract) public view returns (uint256) {
         uint256 totalCount = 0;
-        for (uint256 i = firstTokenId; i <= lastTokenId; ++i) {
-            if (IERC1155(contract1155).balanceOf(holder, i) > 0) {
-                totalCount = totalCount + IERC1155(contract1155).balanceOf(holder, i);
+        for (uint256 i = userContract.firstTokenId; i <= userContract.lastTokenId; ++i) {
+            if (IERC1155(userContract.contract1155).balanceOf(userContract.holder, i) > 0) {
+                totalCount = totalCount + IERC1155(userContract.contract1155).balanceOf(userContract.holder, i);
             }
         }
         return totalCount;
     }
 
+    
+    /// @dev These functions try to return an inventory of a users' NFTs to reduce NFT API usage costs
+
+    function tokenIdInventory(Contract1155 memory userContract) public view returns (uint256[] memory inventoryIds) {
+        uint256 inventorySize = countUnique1155InWallet(userContract);
+        uint256[] memory idsPresent = new uint256[](inventorySize);
+        uint256 arrayPos = 0;
+        for (uint256 i = userContract.firstTokenId; i <= userContract.lastTokenId; ++i) {
+            if (IERC1155(userContract.contract1155).balanceOf(userContract.holder, i) > 0) {
+                idsPresent[arrayPos] = i;
+                ++arrayPos;
+            }
+        }
+        return inventoryIds;
+    }
+
+    function tokenInventoryCount(Contract1155 memory userContract) public view returns (uint256[] memory inventoryCounts) {
+        uint256 totalTokenIds = (userContract.lastTokenId - userContract.firstTokenId);
+        uint256[] memory inventoryTokenCounts = new uint256[](totalTokenIds);
+        uint256 counterIndex = 0;
+        for (uint256 i = userContract.firstTokenId; i <= userContract.lastTokenId; ++i) {
+            inventoryTokenCounts[counterIndex] = IERC1155(userContract.contract1155).balanceOf(userContract.holder, i);
+            ++counterIndex;
+        }
+        return (inventoryTokenCounts);
+    }
     
 }
